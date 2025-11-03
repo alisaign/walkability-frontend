@@ -1,0 +1,28 @@
+:root {
+    --max: 900px;
+    --muted: #6b7280;
+}
+
+.custom-marker-icon {
+    background: none;
+    border: none;
+    width: 24px !important;
+    height: 24px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#distanceSummary table td {
+    vertical-align: top;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+#distanceSummary .table td:first-child {
+    width: 60%;
+}
+
+#distanceSummary .small {
+    color: var(--orange-700);
+}

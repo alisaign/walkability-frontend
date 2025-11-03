@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walkability Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root {
+            --orange-50: #fff7ed;
+            --orange-100: #ffedd5;
+            --orange-200: #fed7aa;
+            --orange-300: #fdba74;
+            --orange-400: #fb923c;
+            --orange-500: #f97316;
+            --orange-600: #ea580c;
+            --orange-700: #c2410c;
+            --amber-500: #f59e0b;
+            --amber-600: #d97706;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--orange-50) 0%, #fef3c7 100%);
+            min-height: 100vh;
+        }
+
+        .bg-orange-gradient {
+            background: linear-gradient(135deg, var(--orange-500) 0%, var(--amber-500) 100%);
+        }
+
+        .text-orange-gradient {
+            background: linear-gradient(135deg, var(--orange-600) 0%, var(--orange-500) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .border-orange {
+            border-color: var(--orange-200) !important;
+        }
+
+        .btn-orange {
+            background: linear-gradient(135deg, var(--orange-500) 0%, var(--amber-500) 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-orange:hover {
+            background: linear-gradient(135deg, var(--orange-600) 0%, var(--amber-600) 100%);
+            color: white;
+        }
+
+        .btn-outline-orange {
+            border-color: var(--orange-300);
+            color: var(--orange-600);
+        }
+
+        .btn-outline-orange:hover {
+            background-color: var(--orange-100);
+            border-color: var(--orange-300);
+            color: var(--orange-600);
+        }
+
+        .card-header-orange {
+            background: linear-gradient(135deg, var(--orange-500) 0%, var(--amber-500) 100%);
+            color: white;
+        }
+
+        .text-orange-600 {
+            color: var(--orange-600) !important;
+        }
+
+        .text-orange-700 {
+            color: var(--orange-700) !important;
+        }
+
+        .bg-orange-50 {
+            background-color: var(--orange-50) !important;
+        }
+
+        .icon-orange {
+            color: var(--orange-500);
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--orange-500) 0%, var(--amber-500) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            border: 4px solid var(--orange-300);
+            box-shadow: 0 8px 25px rgba(249, 115, 22, 0.3);
+        }
+
+
+
+        .progress-orange {
+            background-color: var(--orange-100);
+        }
+
+        .progress-orange .progress-bar {
+            background: linear-gradient(135deg, var(--orange-500) 0%, var(--amber-500) 100%);
+        }
+
+        .badge-walker-paradise {
+            background-color: #22c55e;
+        }
+
+        .badge-very-walkable {
+            background-color: #84cc16;
+        }
+
+        .badge-somewhat-walkable {
+            background-color: #eab308;
+        }
+
+        .badge-car-dependent {
+            background-color: #f97316;
+        }
+
+        .badge-not-walkable {
+            background-color: #ef4444;
+        }
+
+        #map {
+            height: 400px;
+            border-radius: 0.5rem;
+            border: 2px solid var(--orange-200);
+        }
+
+        .category-item {
+            padding: 0.75rem;
+            margin: 0.25rem 0;
+            background-color: var(--orange-50);
+            border: 1px solid var(--orange-200);
+            border-radius: 0.5rem;
+        }
+
+        .score-detail {
+            background: linear-gradient(135deg, var(--orange-100) 0%, #fef3c7 100%);
+            border: 2px solid var(--orange-200);
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <a href="/" class="btn btn-outline-orange">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-award fa-2x icon-orange"></i>
+                <h1 class="text-orange-gradient mb-0">Your Walkability Results</h1>
+            </div>
+        </div>
+
+        <!-- Location Info -->
+        <div class="text-center mb-4" id="locationInfo">
+            <!-- Will be populated by JavaScript -->
+        </div>
+
+        <!-- Main Content -->
+        <div class="row">
+            <!-- Map Column - 2/3 width -->
+            <div class="col-lg-8 mb-4">
+                <!-- Location Map Section -->
+                <div class="card border-orange shadow-lg mb-4">
+                    <div class="card-header card-header-orange">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            Walkability Map
+                        </h4>
+                        <p class="mb-0 opacity-75">Visualization of nearby amenities and walking routes</p>
+                    </div>
+                    <div class="card-body">
+                        <div id="map"></div>
+                    </div>
+                </div>
+
+                <!-- Neighborhood Gradient Map Section -->
+                <div class="card border-orange shadow-lg mb-4">
+                    <div class="card-header card-header-orange">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-map me-2"></i>
+                            Neighborhood Walkability Map
+                        </h4>
+                        <p class="mb-0 opacity-75">Gradient view of walkability across your neighborhood</p>
+                    </div>
+                    <div class="card-body">
+                        <h5 id="neighborhoodTitle" class="text-orange-700 mb-3"></h5>
+                        <div id="gradientMap"></div>
+                    </div>
+                </div>
+                <style>
+                    #gradientMap {
+                        height: 400px;
+                        border-radius: 0.5rem;
+                        border: 2px solid var(--orange-200);
+                    }
+                </style>
+
+                <!-- Distance Summary Section -->
+                <div class="card border-orange mb-4 shadow-lg">
+                    <div class="card-header bg-orange-50 border-bottom border-orange-200">
+                        <h5 class="card-title mb-0 text-orange-700">
+                            Distance Summary
+                        </h5>
+                    </div>
+                    <div class="card-body" id="distanceSummary">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Recommendations -->
+                <div class="card border-orange shadow-lg">
+                    <div class="card-header bg-orange-50 border-bottom border-orange-200">
+                        <h5 class="card-title mb-0 text-orange-700">
+                            Recommendations
+                        </h5>
+                    </div>
+                    <div class="card-body" id="recommendationsSection">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Column - 1/3 width -->
+            <div class="col-lg-4">
+                <!-- Overall Walkability Score -->
+                <div class="card border-orange shadow-lg mb-4">
+                    <div class="card-header card-header-orange text-center">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-trophy me-2"></i>
+                            Overall Walkability Score
+                        </h4>
+                        <p class="mb-0 opacity-75">Based on your location and nearby amenities</p>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="score-circle mx-auto mb-3" id="mainScoreCircle">
+                            <span id="scoreValue">--</span>
+                        </div>
+                        <div id="scoreLabel" class="badge fs-6 mb-2">Calculating...</div>
+                        <p class="text-muted mb-0">Based on proximity to essential amenities</p>
+                    </div>
+                </div>
+
+                <!-- Category Breakdown -->
+                <div class="card border-orange shadow-lg mb-4">
+                    <div class="card-header bg-orange-50 border-bottom border-orange-200">
+                        <h5 class="card-title mb-0 text-orange-700">
+                            Category Breakdown
+                        </h5>
+                    </div>
+                    <div class="card-body" id="categoryBreakdown">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <script src="/static/map.js"></script>
+    <script>
+        let map;
+
+        // Get score label and badge class
+        function getScoreLabel(score) {
+            if (score >= 90) return { label: "Walker's Paradise", class: "badge-walker-paradise" };
+            if (score >= 70) return { label: "Very Walkable", class: "badge-very-walkable" };
+            if (score >= 50) return { label: "Somewhat Walkable", class: "badge-somewhat-walkable" };
+            if (score >= 25) return { label: "Car-Dependent", class: "badge-car-dependent" };
+            return { label: "Not Walkable", class: "badge-not-walkable" };
+        }
+
+        // Format category names
+        function formatCategoryName(category) {
+            const categoryNames = {
+                'metro': 'Metro Stations',
+                'bus': 'Bus Stops',
+                'grocery': 'Grocery Stores',
+                'restaurants': 'Restaurants',
+                'parks': 'Parks & Recreation',
+                'schools': 'Schools',
+                'healthcare': 'Healthcare'
+            };
+            return categoryNames[category] || category.charAt(0).toUpperCase() + category.slice(1);
+        }
+
+        // Get category icon
+        function getCategoryIcon(category) {
+            const icons = {
+                'metro': 'fas fa-subway',
+                'bus': 'fas fa-bus',
+                'grocery': 'fas fa-shopping-cart',
+                'restaurants': 'fas fa-utensils',
+                'parks': 'fas fa-tree',
+                'schools': 'fas fa-graduation-cap',
+                'healthcare': 'fas fa-hospital'
+            };
+            return icons[category] || 'fas fa-map-marker-alt';
+        }
+
+        // Initialize page
+        function initializePage() {
+            // Get data from sessionStorage
+            const resultData = sessionStorage.getItem('walkability_result');
+
+            if (!resultData) {
+                document.body.innerHTML = `
+                    <div class="container py-5 text-center">
+                        <div class="alert alert-warning">
+                            <h4>No walkability data found</h4>
+                            <p>Please go back and calculate your walkability score first.</p>
+                            <a href="/" class="btn btn-orange">Calculate Walkability</a>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const data = JSON.parse(resultData);
+
+            // Update location info
+            if (data.center) {
+                document.getElementById('locationInfo').innerHTML = `
+                    <p class="text-muted lead">
+                        Results for your location at 
+                        <span class="text-orange-600">${data.location}</span>
+                    </p>
+                `;
+            }
+
+            // Update score
+            const score = Math.round(data.index || 0);
+            const scoreInfo = getScoreLabel(score);
+
+            document.getElementById('scoreValue').textContent = score;
+
+            const scoreLabel = document.getElementById('scoreLabel');
+            scoreLabel.textContent = scoreInfo.label;
+            scoreLabel.className = `badge fs-6 mb-2 ${scoreInfo.class}`;
+
+            // Update category breakdown
+            if (data.breakdown) {
+                const categoryBreakdown = document.getElementById('categoryBreakdown');
+                let breakdownHTML = '';
+
+                data.breakdown.forEach(item => {
+                    const percentage = Math.round(item.score * 100);
+                    const categoryName = formatCategoryName(item.name);
+                    const icon = getCategoryIcon(item.name);
+
+                    breakdownHTML += `
+                        <div class="category-item">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span><i class="${icon} me-2"></i>${categoryName}</span>
+                                <span class="text-orange-700">${percentage}%</span>
+                            </div>
+                            <div class="progress progress-orange" style="height: 8px;">
+                                <div class="progress-bar" style="width: ${percentage}%"></div>
+                            </div>
+                            <small class="text-muted">Weight: ${item.weight}</small>
+                        </div>
+                    `;
+                });
+
+                categoryBreakdown.innerHTML = breakdownHTML;
+            }
+
+            // Update distance summary
+            const distanceSummary = document.getElementById('distanceSummary');
+            let distanceHTML = '';
+            function formatDistanceBlock(title, categories, data) {
+                let block = `
+                    <div class="mb-4">
+                        <h6 class="text-orange-600 mb-3">${title}</h6>
+                        <div class="table-responsive">
+                            <table class="table table-borderless align-middle mb-0">
+                                <tbody>
+                `;
+                categories.forEach(category => {
+                    const item = data.breakdown && data.breakdown.find(b => b.name === category);
+                    if (item) {
+                        const nearest = item.nearest_name || 'N/A';
+                        const distance = (item.score > 0)
+                            ? `${(400 * (1 - item.score)).toFixed(0)} m`
+                            : 'Not specified';
+                        const countText = item.nearby_count !== undefined
+                            ? `${item.nearby_count} within buffer`
+                            : '';
+                        block += `
+                            <tr>
+                                <td class="ps-3 text-nowrap">${formatCategoryName(category)}:</td>
+                                <td class="text-orange-700 fw-semibold text-end">${distance}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="text-orange-600 small ps-4 pb-2">
+                                    ${countText}${countText && nearest ? ' | ' : ''}nearest: ${nearest}
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
+                block += `</tbody></table></div></div>`;
+                return block;
+            }
+            const transitCategories = ['metro', 'bus'];
+            const amenityCategories = ['grocery', 'restaurants', 'parks', 'schools', 'healthcare'];
+            
+
+            distanceHTML += formatDistanceBlock('Transit', transitCategories, data);
+            distanceHTML += formatDistanceBlock('Amenities', amenityCategories, data);
+
+            distanceSummary.innerHTML = distanceHTML || '<p class="text-muted">No distance data available</p>';
+
+
+            // // Transit section
+            // const transitCategories = ['metro', 'bus'];
+            // const transitFound = transitCategories.some(cat =>
+            //     data.breakdown && data.breakdown.find(item => item.name === cat)
+            // );
+
+            // if (transitFound) {
+            //     distanceHTML += `
+            //         <div class="mb-4">
+            //             <h6 class="text-orange-600 mb-3">Transit</h6>
+            //             <div class="ms-3">
+            //     `;
+
+            //     transitCategories.forEach(category => {
+            //         const item = data.breakdown && data.breakdown.find(b => b.name === category);
+            //         if (item) {
+            //             const distance = item.nearest_dist || 'Not specified';
+            //             const nearbyCount = item.nearby_count || 0;
+            //             const nearestName = item.nearest_name || 'N/A';
+            //             distanceHTML += `
+            //                 <div class="d-flex justify-content-between mb-2">
+            //                     <span>${formatCategoryName(category)}:</span>
+            //                     <span class="text-orange-700">
+            //                         ${distance}
+            //                         <br><small>${nearbyCount} within buffer | nearest: ${nearestName}</small>
+            //                     </span>
+            //                 </div>
+            //             `;
+            //         }
+            //     });
+
+            //     distanceHTML += '</div></div>';
+            // }
+
+            // // Amenities section
+            // const amenityCategories = ['grocery', 'restaurants', 'parks', 'schools', 'healthcare'];
+            // const amenitiesFound = amenityCategories.some(cat =>
+            // //     data.breakdown && data.breakdown.find(item => item.name === cat)
+            // // );
+
+            // // if (amenitiesFound) {
+            // //     distanceHTML += `
+            // //         <div class="mb-4">
+            // //             <h6 class="text-orange-600 mb-3">Amenities</h6>
+            // //             <div class="ms-3">
+            // //     `;
+
+            // //     amenityCategories.forEach(category => {
+            //         // const item = data.breakdown && data.breakdown.find(b => b.name === category);
+            //         // if (item) {
+            //         //     const distance = item.score > 0 ? `${(800 * (1 - item.score)).toFixed(0)}m` : 'Not specified';
+            //         //     distanceHTML += `
+            // //                 <div class="d-flex justify-content-between mb-2">
+            // //                     <span>${formatCategoryName(category)}:</span>
+            // //                     <span class="text-orange-700">${distance}</span>
+            // //                 </div>
+            // //             `;
+            // //         }
+            // //     });
+
+            // //     distanceHTML += '</div></div>';
+            // // }
+
+            // distanceSummary.innerHTML = distanceHTML || '<p class="text-muted">No distance data available</p>';
+
+            // Update recommendations section
+            const recommendationsSection = document.getElementById('recommendationsSection');
+            let recommendationsHTML = '';
+
+            // Generate recommendations based on score
+            const recommendations = [];
+            if (score >= 80) {
+                recommendations.push("Consider moving closer to grocery stores for daily convenience");
+                recommendations.push("Public transit access could be improved for better connectivity");
+                recommendations.push("Access to parks and green spaces would enhance quality of life");
+                recommendations.push("Consider supplementing with bike or car transportation");
+            } else if (score >= 60) {
+                recommendations.push("Consider moving closer to grocery stores for daily convenience");
+                recommendations.push("Public transit access could be improved for better connectivity");
+                recommendations.push("Access to parks and green spaces would enhance quality of life");
+                recommendations.push("Consider supplementing with bike or car transportation");
+            } else {
+                recommendations.push("Consider moving closer to grocery stores for daily convenience");
+                recommendations.push("Public transit access could be improved for better connectivity");
+                recommendations.push("Access to parks and green spaces would enhance quality of life");
+                recommendations.push("Consider supplementing with bike or car transportation");
+            }
+
+            recommendations.forEach(rec => {
+                recommendationsHTML += `
+                    <div class="d-flex align-items-start mb-3">
+                        <i class="fas fa-arrow-right me-2 mt-1 icon-orange" style="font-size: 0.75rem;"></i>
+                        <span>${rec}</span>
+                    </div>
+                `;
+            });
+
+            recommendationsSection.innerHTML = recommendationsHTML;
+
+            // Initialize map
+            try {
+                initWalkabilityMap(data);
+            } catch (error) {
+                console.error('Error initializing map:', error);
+            }
+            // Initialize neighborhood gradient map
+            try {
+                if (data.gradient_layer) {
+                    document.getElementById('neighborhoodTitle').textContent =
+                        `Neighborhood: ${data.neighborhood}`;
+                    initNeighborhoodGradientMap(data);
+                }
+            } catch (error) {
+                console.error('Error initializing gradient map:', error);
+            }
+
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+
+</html>

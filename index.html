@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walkability Index Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --orange-50: #fff7ed;
+            --orange-100: #ffedd5;
+            --orange-200: #fed7aa;
+            --orange-300: #fdba74;
+            --orange-400: #fb923c;
+            --orange-500: #f97316;
+            --orange-600: #ea580c;
+            --orange-700: #c2410c;
+            --amber-500: #f59e0b;
+            --amber-600: #d97706;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--orange-50) 0%, #fef3c7 100%);
+            min-height: 100vh;
+        }
+
+        .bg-orange-gradient {
+            background: linear-gradient(135deg, var(--orange-500) 0%, var(--amber-500) 100%);
+        }
+
+        .text-orange-gradient {
+            background: linear-gradient(135deg, var(--orange-600) 0%, var(--orange-500) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .border-orange {
+            border-color: var(--orange-200) !important;
+        }
+
+        .form-control:focus {
+            border-color: var(--orange-400);
+            box-shadow: 0 0 0 0.2rem rgba(249, 115, 22, 0.25);
+        }
+
+        .btn-orange {
+            background: linear-gradient(135deg, var(--orange-500) 0%, var(--amber-500) 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-orange:hover {
+            background: linear-gradient(135deg, var(--orange-600) 0%, var(--amber-600) 100%);
+            color: white;
+        }
+
+        .btn-outline-orange {
+            border-color: var(--orange-300);
+            color: var(--orange-600);
+        }
+
+        .btn-outline-orange:hover {
+            background-color: var(--orange-100);
+            border-color: var(--orange-300);
+            color: var(--orange-600);
+        }
+
+        .card-header-orange {
+            background: linear-gradient(135deg, var(--orange-500) 0%, var(--amber-500) 100%);
+            color: white;
+        }
+
+        .text-orange-600 {
+            color: var(--orange-600) !important;
+        }
+
+        .text-orange-700 {
+            color: var(--orange-700) !important;
+        }
+
+        .bg-orange-50 {
+            background-color: var(--orange-50) !important;
+        }
+
+        .custom-place-item {
+            background-color: var(--orange-50);
+            border: 1px solid var(--orange-200);
+        }
+
+        .section-title {
+            color: var(--orange-700);
+            border-bottom: 2px solid var(--orange-200);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .icon-orange {
+            color: var(--orange-500);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Header -->
+                <div class="text-center mb-5">
+                    <div class="d-flex align-items-center justify-content-center gap-3 mb-3">
+                        <i class="fas fa-map-marker-alt fa-2x icon-orange"></i>
+                        <h1 class="text-orange-gradient mb-0">Walkability Index Calculator</h1>
+                    </div>
+                    <p class="text-muted lead">
+                        Calculate your neighborhood's walkability score by entering the walking distances to essential
+                        amenities.
+                        Our algorithm considers proximity, accessibility, and urban design factors to generate a
+                        comprehensive walkability rating.
+                    </p>
+                </div>
+
+                <!-- Main Form Card -->
+                <div class="card shadow-lg border-orange">
+                    <div class="card-header card-header-orange">
+                        <h3 class="card-title mb-1">
+                            <i class="fas fa-walking me-2"></i>
+                            Location & Walking Distances
+                        </h3>
+                        <p class="card-text mb-0 opacity-75">Enter your location details and walking distances to nearby
+                            amenities.</p>
+                    </div>
+                    <div class="card-body">
+                        <form id="walkabilityForm">
+                            <!-- Location Section -->
+                            <div class="mb-5">
+                                <h4 class="section-title">
+                                    <i class="fas fa-map-marker-alt me-2"></i>
+                                    Location Information
+                                </h4>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="location" class="form-label">Location Name</label>
+                                        <input type="text" class="form-control border-orange" id="location"
+                                            name="location" placeholder="e.g., Downtown Montreal" value="Montréal, QC, CAN" 
+                                            required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="lat" class="form-label">Latitude</label>
+                                        <input type="number" class="form-control border-orange" id="lat" name="lat"
+                                            step="0.000001" placeholder="45.5017" value="45.5017" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="lon" class="form-label">Longitude</label>
+                                        <input type="number" class="form-control border-orange" id="lon" name="lon"
+                                            step="0.000001" placeholder="-73.5673" value="-73.5673" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cutoff Distances Section -->
+                            <div class="mb-5">
+                                <h4 class="section-title">
+                                    <i class="fas fa-ruler me-2"></i>
+                                    Maximum Walking Distances (meters)
+                                </h4>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="metro_m" class="form-label">
+                                            <i class="fas fa-subway me-2"></i>Metro Station
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control border-orange" id="metro_m"
+                                                name="metro_m" step="50" min="0" placeholder="400">
+                                            <span class="input-group-text">meters</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="bus_m" class="form-label">
+                                            <i class="fas fa-bus me-2"></i>Bus Stop
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control border-orange" id="bus_m"
+                                                name="bus_m" step="50" min="0" placeholder="500">
+                                            <span class="input-group-text">meters</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="grocery_m" class="form-label">
+                                            <i class="fas fa-shopping-cart me-2"></i>Grocery Stores
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control border-orange" id="grocery_m"
+                                                name="grocery_m" step="50" min="0" placeholder="500">
+                                            <span class="input-group-text">meters</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="restaurants_m" class="form-label">
+                                            <i class="fas fa-utensils me-2"></i>Restaurants
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control border-orange" id="restaurants_m"
+                                                name="restaurants_m" step="50" min="0" placeholder="300">
+                                            <span class="input-group-text">meters</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="parks_m" class="form-label">
+                                            <i class="fas fa-tree me-2"></i>Parks & Recreation
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control border-orange" id="parks_m"
+                                                name="parks_m" step="50" min="0" placeholder="400">
+                                            <span class="input-group-text">meters</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="schools_m" class="form-label">
+                                            <i class="fas fa-graduation-cap me-2"></i>Schools
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control border-orange" id="schools_m"
+                                                name="schools_m" step="50" min="0" placeholder="800">
+                                            <span class="input-group-text">meters</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="healthcare_m" class="form-label">
+                                            <i class="fas fa-hospital me-2"></i>Healthcare
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control border-orange" id="healthcare_m"
+                                                name="healthcare_m" step="50" min="0" placeholder="1000">
+                                            <span class="input-group-text">meters</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Weights Section -->
+                            <div class="mb-5">
+                                <h4 class="section-title">
+                                    <i class="fas fa-balance-scale me-2"></i>
+                                    Importance Weights (1-5 scale)
+                                </h4>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="w_metro" class="form-label">
+                                            <i class="fas fa-subway me-2"></i>Metro Station Weight
+                                        </label>
+                                        <select class="form-select border-orange" id="w_metro" name="w_metro">
+                                            <option value="0">0 - Doesn't matter</option>
+                                            <option value="1">1 - Low importance</option>
+                                            <option value="2">2 - Below average</option>
+                                            <option value="3" selected>3 - Average importance</option>
+                                            <option value="4">4 - High importance</option>
+                                            <option value="5">5 - Critical importance</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="w_bus" class="form-label">
+                                            <i class="fas fa-bus me-2"></i>Bus Stop Weight
+                                        </label>
+                                        <select class="form-select border-orange" id="w_bus" name="w_bus">
+                                            <option value="0">0 - Doesn't matter</option>
+                                            <option value="1">1 - Low importance</option>
+                                            <option value="2" selected>2 - Below average</option>
+                                            <option value="3">3 - Average importance</option>
+                                            <option value="4">4 - High importance</option>
+                                            <option value="5">5 - Critical importance</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="w_grocery" class="form-label">
+                                            <i class="fas fa-shopping-cart me-2"></i>Grocery Stores Weight
+                                        </label>
+                                        <select class="form-select border-orange" id="w_grocery" name="w_grocery">
+                                            <option value="0">0 - Doesn't matter</option>
+                                            <option value="1">1 - Low importance</option>
+                                            <option value="2">2 - Below average</option>
+                                            <option value="3" selected>3 - Average importance</option>
+                                            <option value="4">4 - High importance</option>
+                                            <option value="5">5 - Critical importance</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="w_restaurants" class="form-label">
+                                            <i class="fas fa-utensils me-2"></i>Restaurants Weight
+                                        </label>
+                                        <select class="form-select border-orange" id="w_restaurants"
+                                            name="w_restaurants">
+                                            <option value="0">0 - Doesn't matter</option>
+                                            <option value="1">1 - Low importance</option>
+                                            <option value="2" selected>2 - Below average</option>
+                                            <option value="3">3 - Average importance</option>
+                                            <option value="4">4 - High importance</option>
+                                            <option value="5">5 - Critical importance</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="w_parks" class="form-label">
+                                            <i class="fas fa-tree me-2"></i>Parks Weight
+                                        </label>
+                                        <select class="form-select border-orange" id="w_parks" name="w_parks">
+                                            <option value="0">0 - Doesn't matter</option>
+                                            <option value="1">1 - Low importance</option>
+                                            <option value="2" selected>2 - Below average</option>
+                                            <option value="3">3 - Average importance</option>
+                                            <option value="4">4 - High importance</option>
+                                            <option value="5">5 - Critical importance</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="w_schools" class="form-label">
+                                            <i class="fas fa-graduation-cap me-2"></i>Schools Weight
+                                        </label>
+                                        <select class="form-select border-orange" id="w_schools" name="w_schools">
+                                            <option value="0">0 - Doesn't matter</option>
+                                            <option value="1">1 - Low importance</option>
+                                            <option value="2" selected>2 - Below average</option>
+                                            <option value="3">3 - Average importance</option>
+                                            <option value="4">4 - High importance</option>
+                                            <option value="5">5 - Critical importance</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="w_healthcare" class="form-label">
+                                            <i class="fas fa-hospital me-2"></i>Healthcare Weight
+                                        </label>
+                                        <select class="form-select border-orange" id="w_healthcare" name="w_healthcare">
+                                            <option value="0">0 - Doesn't matter</option>
+                                            <option value="1">1 - Low importance</option>
+                                            <option value="2" selected>2 - Below average</option>
+                                            <option value="3">3 - Average importance</option>
+                                            <option value="4">4 - High importance</option>
+                                            <option value="5">5 - Critical importance</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <!-- Submit Button -->
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-orange btn-lg px-5">
+                                    <i class="fas fa-calculator me-2"></i>
+                                    Calculate Walkability Index
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Form submission
+        document.getElementById('walkabilityForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // Show loading state
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Calculating...';
+            submitButton.disabled = true;
+
+            try {
+                // Define consistent category order
+                const categories = ["metro", "bus", "grocery", "restaurants", "parks", "schools", "healthcare"];
+
+                // Build arrays in the same order
+                const thresholds = [
+                    parseInt(document.getElementById('metro_m').value) || 200,
+                    parseInt(document.getElementById('bus_m').value) || 1000,
+                    parseInt(document.getElementById('grocery_m').value) || 500,
+                    parseInt(document.getElementById('restaurants_m').value) || 300,
+                    parseInt(document.getElementById('parks_m').value) || 400,
+                    parseInt(document.getElementById('schools_m').value) || 800,
+                    parseInt(document.getElementById('healthcare_m').value) || 1000
+                ];
+
+                const weights = [
+                    parseInt(document.getElementById('w_metro').value),
+                    parseInt(document.getElementById('w_bus').value),
+                    parseInt(document.getElementById('w_grocery').value),
+                    parseInt(document.getElementById('w_restaurants').value),
+                    parseInt(document.getElementById('w_parks').value),
+                    parseInt(document.getElementById('w_schools').value),
+                    parseInt(document.getElementById('w_healthcare').value)
+                ];
+
+                // Build the payload in backend's expected format
+                const payload = {
+                    location: {
+                        name: document.getElementById('location').value,
+                        lat: parseFloat(document.getElementById('lat').value),
+                        lon: parseFloat(document.getElementById('lon').value)
+                    },
+                    categories: categories,
+                    thresholds: thresholds,
+                    weights: weights
+                };
+
+                console.log("Payload being sent:", payload);
+
+
+                // Send to backend API
+                const response = await fetch('http://127.0.0.1:8000/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                // Store result in sessionStorage for the results page
+                sessionStorage.setItem('walkability_result', JSON.stringify(result));
+
+                // Redirect to results page
+                window.location.href = '/result';
+
+            } catch (error) {
+                console.error('Error calling backend API:', error);
+                alert('Sorry, there was an error calculating the walkability score. Please check that the backend is running and try again.');
+
+                // Reset button state
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>
