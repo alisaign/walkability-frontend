@@ -2,14 +2,14 @@ function getCategoryIconClass(category) {
     const icons = {
         metro: 'fa-subway',
         bus: 'fa-bus',
+        bixi: 'fa-bicycle',
+        park: 'fa-tree',
         grocery: 'fa-shopping-cart',
-        restaurants: 'fa-utensils',
-        parks: 'fa-tree',
-        schools: 'fa-graduation-cap',
-        healthcare: 'fa-hospital',
+        restaurant: 'fa-utensils'
     };
     return icons[category] || 'fa-map-marker-alt';
 }
+
 
 function initWalkabilityMap(DATA) {
     const center = [DATA.center.lat, DATA.center.lon];
@@ -38,7 +38,32 @@ function initWalkabilityMap(DATA) {
                 const nearby = DATA.nearby.filter(poi => poi.category === item.name);
                 nearby.forEach(poi => {
                     if (poi.geometry && poi.geometry.coordinates) {
-                        const [lon, lat] = poi.geometry.coordinates;
+                        let lat, lon;
+
+                        // Handle Point geometry
+                        if (poi.geometry.type === "Point") {
+                            [lon, lat] = poi.geometry.coordinates;
+                        }
+
+                        // Handle Polygon geometry (use centroid of outer ring)
+                        else if (poi.geometry.type === "Polygon") {
+                            const ring = poi.geometry.coordinates[0]; // outer ring
+                            let x = 0, y = 0;
+                            ring.forEach(coord => {
+                                x += coord[0];
+                                y += coord[1];
+                            });
+                            x /= ring.length;
+                            y /= ring.length;
+                            lon = x;
+                            lat = y;
+                        }
+
+                        // (Optional skip) If we ever find something else
+                        else {
+                            return; // do not try to render unknown geometry types
+                        }
+
                         const customIcon = L.divIcon({
                             html: `<i class="fas ${iconClass}" style="color:#f97316;font-size:18px;"></i>`,
                             className: 'custom-marker-icon',
