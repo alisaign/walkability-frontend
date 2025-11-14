@@ -397,9 +397,7 @@
                     const item = data.breakdown && data.breakdown.find(b => b.name === category);
                     if (item) {
                         const nearest = item.nearest_name || 'N/A';
-                        const distance = (item.score > 0)
-                            ? `${(400 * (1 - item.score)).toFixed(0)} m`
-                            : 'Not specified';
+                        const distance = `${(400 * (1 - item.score)).toFixed(0)} m`;
                         const countText = item.nearby_count !== undefined
                             ? `${item.nearby_count} within buffer`
                             : '';
