@@ -374,7 +374,6 @@
                             <div class="progress progress-orange" style="height: 8px;">
                                 <div class="progress-bar" style="width: ${percentage}%"></div>
                             </div>
-                            <small class="text-muted">Weight: ${item.weight}</small>
                         </div>
                     `;
                 });
@@ -426,71 +425,6 @@
 
             distanceSummary.innerHTML = distanceHTML || '<p class="text-muted">No distance data available</p>';
 
-
-            // // Transit section
-            // const transitCategories = ['metro', 'bus'];
-            // const transitFound = transitCategories.some(cat =>
-            //     data.breakdown && data.breakdown.find(item => item.name === cat)
-            // );
-
-            // if (transitFound) {
-            //     distanceHTML += `
-            //         <div class="mb-4">
-            //             <h6 class="text-orange-600 mb-3">Transit</h6>
-            //             <div class="ms-3">
-            //     `;
-
-            //     transitCategories.forEach(category => {
-            //         const item = data.breakdown && data.breakdown.find(b => b.name === category);
-            //         if (item) {
-            //             const distance = item.nearest_dist || 'Not specified';
-            //             const nearbyCount = item.nearby_count || 0;
-            //             const nearestName = item.nearest_name || 'N/A';
-            //             distanceHTML += `
-            //                 <div class="d-flex justify-content-between mb-2">
-            //                     <span>${formatCategoryName(category)}:</span>
-            //                     <span class="text-orange-700">
-            //                         ${distance}
-            //                         <br><small>${nearbyCount} within buffer | nearest: ${nearestName}</small>
-            //                     </span>
-            //                 </div>
-            //             `;
-            //         }
-            //     });
-
-            //     distanceHTML += '</div></div>';
-            // }
-
-            // // Amenities section
-            // const amenityCategories = ['grocery', 'restaurants', 'parks', 'schools', 'healthcare'];
-            // const amenitiesFound = amenityCategories.some(cat =>
-            // //     data.breakdown && data.breakdown.find(item => item.name === cat)
-            // // );
-
-            // // if (amenitiesFound) {
-            // //     distanceHTML += `
-            // //         <div class="mb-4">
-            // //             <h6 class="text-orange-600 mb-3">Amenities</h6>
-            // //             <div class="ms-3">
-            // //     `;
-
-            // //     amenityCategories.forEach(category => {
-            //         // const item = data.breakdown && data.breakdown.find(b => b.name === category);
-            //         // if (item) {
-            //         //     const distance = item.score > 0 ? `${(800 * (1 - item.score)).toFixed(0)}m` : 'Not specified';
-            //         //     distanceHTML += `
-            // //                 <div class="d-flex justify-content-between mb-2">
-            // //                     <span>${formatCategoryName(category)}:</span>
-            // //                     <span class="text-orange-700">${distance}</span>
-            // //                 </div>
-            // //             `;
-            // //         }
-            // //     });
-
-            // //     distanceHTML += '</div></div>';
-            // // }
-
-            // distanceSummary.innerHTML = distanceHTML || '<p class="text-muted">No distance data available</p>';
 
             // Update recommendations section
             const recommendationsSection = document.getElementById('recommendationsSection');
