@@ -349,7 +349,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/js/geocoding.js"></script>
+    <script src="js/geocoding.js"></script>
     <script>
         attachAddressAutocomplete("address_input");
         // Form submission
@@ -437,7 +437,8 @@
                 sessionStorage.setItem('walkability_result', JSON.stringify(result));
 
                 // Redirect to results page
-                window.location.href = '/result';
+                window.location.href = 'result.html';
+
 
             } catch (error) {
                 console.error('Error calling backend API:', error);
