@@ -328,15 +328,6 @@
 
             const data = JSON.parse(resultData);
 
-            // Update location info
-            if (data.center) {
-                document.getElementById('locationInfo').innerHTML = `
-                    <p class="text-muted lead">
-                        Results for your location at 
-                        <span class="text-orange-600">${data.location}</span>
-                    </p>
-                `;
-            }
 
             // Update score
             const score = Math.round(data.index || 0);
