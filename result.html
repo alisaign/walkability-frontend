@@ -156,23 +156,21 @@
 <body>
     <div class="container py-4">
         <!-- Header -->
-        <div class="d-flex align-items-center gap-3 mb-4">
-            <a href="index.html" class="btn btn-outline-orange">
-                <i class="fas fa-arrow-left me-2"></i>Back
+        <div class="result-topbar d-flex justify-content-between align-items-center px-3 py-2 mb-3">
+            <a href="index.html" class="btn btn-sm btn-outline-orange">
+                <i class="fas fa-arrow-left"></i>
             </a>
-            <div class="d-flex align-items-center gap-2">
-                <i class="fas fa-award fa-2x icon-orange"></i>
-                <h1 class="text-orange-gradient mb-0">Your Walkability Results</h1>
+        
+            <div id="topbarText" class="fw-semibold text-orange-700 text-center flex-grow-1 mx-3">
             </div>
+        
+            <div id="topbarScore" class="score-badge-small">--</div>
         </div>
 
-        <!-- Location Info -->
-        <div class="text-center mb-4" id="locationInfo">
-            <!-- Will be populated by JavaScript -->
-        </div>
 
-        <!-- Main Content -->
-        <div class="row">
+
+        <<!-- Main Content -->
+        <div class="row gx-4 w-100 mx-0">
             <!-- Map Column - 2/3 width -->
             <div class="col-lg-8 mb-4">
                 <!-- Location Map Section -->
@@ -238,23 +236,6 @@
 
             <!-- Results Column - 1/3 width -->
             <div class="col-lg-4">
-                <!-- Overall Walkability Score -->
-                <div class="card border-orange shadow-lg mb-4">
-                    <div class="card-header card-header-orange text-center">
-                        <h4 class="card-title mb-0">
-                            <i class="fas fa-trophy me-2"></i>
-                            Overall Walkability Score
-                        </h4>
-                        <p class="mb-0 opacity-75">Based on your location and nearby amenities</p>
-                    </div>
-                    <div class="card-body text-center">
-                        <div class="score-circle mx-auto mb-3" id="mainScoreCircle">
-                            <span id="scoreValue">--</span>
-                        </div>
-                        <div id="scoreLabel" class="badge fs-6 mb-2">Calculating...</div>
-                        <p class="text-muted mb-0">Based on proximity to essential amenities</p>
-                    </div>
-                </div>
 
                 <!-- Category Breakdown -->
                 <div class="card border-orange shadow-lg mb-4">
@@ -269,6 +250,18 @@
                 </div>
 
                 
+            </div>
+        </div>
+    </div>
+
+    <!-- Score -->
+    <div class="modal fade" id="scoreModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center">
+                <h4 class="mb-3">Overall Walkability Score</h4>
+                <div id="modalScoreValue" class="score-circle mx-auto mb-3">--</div>
+                <div id="modalScoreLabel" class="fw-semibold mb-2"></div>
+                <button class="btn btn-orange mt-3" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -347,7 +340,30 @@
 
             // Update score
             const score = Math.round(data.index || 0);
+            // Fill modal values
+            document.getElementById("modalScoreValue").textContent = score;
+            document.getElementById("modalScoreLabel").textContent = scoreInfo.label;
+
+            // Show popup immediately
+            const modal = new bootstrap.Modal(document.getElementById("scoreModal"));
+            modal.show();
+
             const scoreInfo = getScoreLabel(score);
+
+            // Topbar text
+            document.getElementById("topbarText").textContent =
+                `Walkability results for ${data.location}`;
+
+            // Topbar score color
+            const tb = document.getElementById("topbarScore");
+            tb.textContent = score;
+
+            if (score >= 80) tb.style.background = "#16a34a";
+            else if (score >= 60) tb.style.background = "#84cc16";
+            else if (score >= 40) tb.style.background = "#f59e0b";
+            else if (score >= 20) tb.style.background = "#f97316";
+            else tb.style.background = "#ef4444";
+
 
             document.getElementById('scoreValue').textContent = score;
 

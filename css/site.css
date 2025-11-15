@@ -13,16 +13,36 @@
     justify-content: center;
 }
 
-#distanceSummary table td {
+#distanceSummary 
+table td {
     vertical-align: top;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
 }
 
-#distanceSummary .table td:first-child {
+#distanceSummary 
+.table td:first-child {
     width: 60%;
 }
 
-#distanceSummary .small {
+#distanceSummary 
+.small {
     color: var(--orange-700);
+}
+
+
+.result-topbar {
+    background: white;
+    border-bottom: 1px solid var(--orange-200);
+    width: 100%;
+}
+
+.score-badge-small {
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: white;
+    min-width: 50px;
+    text-align: center;
 }
