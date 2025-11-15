@@ -331,6 +331,10 @@
 
             // Update score
             const score = Math.round(data.index || 0);
+
+            const scoreInfo = getScoreLabel(score);
+
+
             // Fill modal values
             document.getElementById("modalScoreValue").textContent = score;
             document.getElementById("modalScoreLabel").textContent = scoreInfo.label;
@@ -339,7 +343,7 @@
             const modal = new bootstrap.Modal(document.getElementById("scoreModal"));
             modal.show();
 
-            const scoreInfo = getScoreLabel(score);
+
 
             // Topbar text
             document.getElementById("topbarText").textContent =
