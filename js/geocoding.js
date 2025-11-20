@@ -1,7 +1,29 @@
 // js/geocoding.js
 // Handles address input, live suggestions, and geocoding via OpenStreetMap (Nominatim)
 
+console.log("GEOCODING FILE EXECUTED");
+
+
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
+
+function shortenAddress(full) {
+    if (!full) return full;
+
+    const parts = full.split(",");
+
+    if (parts.length < 3) return full.trim();
+
+    const street = parts[0].trim();
+    const street2 = parts[1]?.trim() || "";
+
+    // find “VERDUN” part regardless of accents or lowercase
+    const borough = parts.find(p =>
+        p.toLowerCase().normalize("NFD").includes("verdun")
+    )?.trim() || "";
+
+    return [street, street2, borough].filter(Boolean).join(", ");
+}
+
 
 /**
  * Fetch suggestions while typing
@@ -74,4 +96,10 @@ function attachAddressAutocomplete(inputId) {
             suggestionBox.innerHTML = "";
         }
     });
+
+    // Expose functions globally
+    window.shortenAddress = shortenAddress;
+    window.geocodeAddress = geocodeAddress;
+    window.attachAddressAutocomplete = attachAddressAutocomplete;
+
 }

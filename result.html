@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/site.css"> <!-- replace -->
+
     <style>
         :root {
             --orange-50: #fff7ed;
@@ -131,7 +133,9 @@
         }
 
         #map {
-            height: 400px;
+            width: 100%;
+            aspect-ratio: 1 / 0.7;
+            /* square map */
             border-radius: 0.5rem;
             border: 2px solid var(--orange-200);
         }
@@ -154,24 +158,32 @@
 </head>
 
 <body>
-    <div class="container py-4">
+    <div class="container-fluid py-0 px-4">
         <!-- Header -->
-        <div class="result-topbar d-flex justify-content-between align-items-center px-3 py-2 mb-3">
-            <a href="index.html" class="btn btn-sm btn-outline-orange">
+        <!-- Top Bar -->
+        <div class="result-topbar d-flex align-items-center justify-content-between px-3 py-2 mb-4">
+
+            <!-- Left: back button style -->
+            <a href="index.html" class="btn btn-outline-orange" style="padding: 10px 14px; font-size: 2rem;"> <!-- replace -->
                 <i class="fas fa-arrow-left"></i>
             </a>
-        
-            <div id="topbarText" class="fw-semibold text-orange-700 text-center flex-grow-1 mx-3">
+
+            <!-- Center: Large header text -->
+            <div id="topbarText" class="topbar-title text-orange-gradient text-center flex-grow-1 mx-4">
+                <!-- JS fills -->
             </div>
-        
-            <div id="topbarScore" class="score-badge-small">--</div>
+
+            <!-- Right: Large score circle -->
+            <div id="topbarScore" class="score-circle score-circle-topbar">--</div>
+
         </div>
 
 
 
-        <<!-- Main Content -->
+
+        <!-- Main Content -->
         <div class="row gx-4 w-100 mx-0">
-            <!-- Map Column - 2/3 width -->
+            <!-- Map Column -->
             <div class="col-lg-8 mb-4">
                 <!-- Location Map Section -->
                 <div class="card border-orange shadow-lg mb-4">
@@ -184,6 +196,8 @@
                     </div>
                     <div class="card-body">
                         <div id="map"></div>
+                        <div id="bufferScaleBar" class="mt-2"></div>
+
                     </div>
                 </div>
 
@@ -209,15 +223,20 @@
                     }
                 </style>
 
-                <!-- Distance Summary Section -->
-                <div class="card border-orange mb-4 shadow-lg">
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="card border-orange shadow-lg mb-4">
                     <div class="card-header bg-orange-50 border-bottom border-orange-200">
                         <h5 class="card-title mb-0 text-orange-700">
-                            Distance Summary
+                            Category & Distance Overview
                         </h5>
                     </div>
-                    <div class="card-body" id="distanceSummary">
-                        <!-- Will be populated by JavaScript -->
+
+                    <div class="card-body" id="combinedCategorySummary">
+                        <!-- JS will fill -->
                     </div>
                 </div>
 
@@ -232,25 +251,9 @@
                         <!-- Will be populated by JavaScript -->
                     </div>
                 </div>
+
             </div>
 
-            <!-- Results Column - 1/3 width -->
-            <div class="col-lg-4">
-
-                <!-- Category Breakdown -->
-                <div class="card border-orange shadow-lg mb-4">
-                    <div class="card-header bg-orange-50 border-bottom border-orange-200">
-                        <h5 class="card-title mb-0 text-orange-700">
-                            Category Breakdown
-                        </h5>
-                    </div>
-                    <div class="card-body" id="categoryBreakdown">
-                        <!-- Will be populated by JavaScript -->
-                    </div>
-                </div>
-
-                
-            </div>
         </div>
     </div>
 
@@ -268,8 +271,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@1.6.0/Control.FullScreen.min.js"></script>
+
     <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
-    <script src="js/map.js"></script>
+    <script src="js/map.js"></script> <!-- replace -->
     <script>
         let map;
 
@@ -308,6 +313,19 @@
             return icons[category] || 'fas fa-map-marker-alt';
         }
 
+        function getScoreColor(score) {
+            // Clamp between 0 and 100
+            const s = Math.max(0, Math.min(100, score));
+
+            // 0 → red (hue 0), 100 → green (hue 120)
+            const hue = (s / 100) * 120;
+
+            // Bright, saturated color
+            return `hsl(${hue}, 85%, 50%)`;
+        }
+
+
+
         // Initialize page
         function initializePage() {
             // Get data from sessionStorage
@@ -338,6 +356,10 @@
             // Fill modal values
             document.getElementById("modalScoreValue").textContent = score;
             document.getElementById("modalScoreLabel").textContent = scoreInfo.label;
+            const modalCircle = document.getElementById("modalScoreValue");
+            const scoreColor = getScoreColor(score);
+            modalCircle.style.background = scoreColor;
+            modalCircle.style.borderColor = scoreColor;
 
             // Show popup immediately
             const modal = new bootstrap.Modal(document.getElementById("scoreModal"));
@@ -345,96 +367,68 @@
 
 
 
-            // Topbar text
-            document.getElementById("topbarText").textContent =
-                `Walkability results for ${data.location}`;
 
-            // Topbar score color
+
+            // Topbar title
+            document.getElementById("topbarText").textContent =
+                `Walkability results for ${data.location.toUpperCase()}`;
+
+            // Topbar score
             const tb = document.getElementById("topbarScore");
             tb.textContent = score;
 
-            if (score >= 80) tb.style.background = "#16a34a";
-            else if (score >= 60) tb.style.background = "#84cc16";
-            else if (score >= 40) tb.style.background = "#f59e0b";
-            else if (score >= 20) tb.style.background = "#f97316";
-            else tb.style.background = "#ef4444";
+            // Same coloring as the circle
+            tb.style.background = scoreColor;
+            tb.style.borderColor = scoreColor;
 
 
-            document.getElementById('scoreValue').textContent = score;
 
-            const scoreLabel = document.getElementById('scoreLabel');
-            scoreLabel.textContent = scoreInfo.label;
-            scoreLabel.className = `badge fs-6 mb-2 ${scoreInfo.class}`;
+            // Combined category + distance rows
+            const combined = document.getElementById("combinedCategorySummary");
+            let combinedHTML = `
+                <div class="d-flex justify-content-between px-1 mb-2 fw-bold text-orange-700" style="font-size: 0.9rem;">
+                    <div>Category</div>
+                    <div>Nearest</div>
+                </div>
+            `;
 
-            // Update category breakdown
-            if (data.breakdown) {
-                const categoryBreakdown = document.getElementById('categoryBreakdown');
-                let breakdownHTML = '';
 
-                data.breakdown.forEach(item => {
-                    const percentage = Math.round(item.score * 100);
-                    const categoryName = formatCategoryName(item.name);
-                    const icon = getCategoryIcon(item.name);
+            data.breakdown.forEach(item => {
+                const percentage = Math.round(item.score * 100);
+                const categoryName = formatCategoryName(item.name);
+                const icon = getCategoryIcon(item.name);
 
-                    breakdownHTML += `
-                        <div class="category-item">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span><i class="${icon} me-2"></i>${categoryName}</span>
-                                <span class="text-orange-700">${percentage}%</span>
+                combinedHTML += `
+                    <div class="category-row">
+
+                        <div class="category-left">
+                            <div class="category-top-line">
+                                <i class="${icon}"></i>
+                                <span>${categoryName}</span>
                             </div>
+
                             <div class="progress progress-orange" style="height: 8px;">
                                 <div class="progress-bar" style="width: ${percentage}%"></div>
                             </div>
+
+                            <div class="small text-orange-700">
+                                ${item.nearby_count} within ${item.buffer}m buffer
+                            </div>
                         </div>
-                    `;
-                });
 
-                categoryBreakdown.innerHTML = breakdownHTML;
-            }
+                        <div class="category-right">
+                            <div class="text-orange-700 fw-semibold">${item.nearest_dist} m</div>
+                            <div class="small text-muted">${item.nearest_name}</div>
+                        </div>
 
-            // Update distance summary
-            const distanceSummary = document.getElementById('distanceSummary');
-            let distanceHTML = '';
-            function formatDistanceBlock(title, categories, data) {
-                let block = `
-                    <div class="mb-4">
-                        <h6 class="text-orange-600 mb-3">${title}</h6>
-                        <div class="table-responsive">
-                            <table class="table table-borderless align-middle mb-0">
-                                <tbody>
+                    </div>
                 `;
-                categories.forEach(category => {
-                    const item = data.breakdown && data.breakdown.find(b => b.name === category);
-                    if (item) {
-                        const nearest = item.nearest_name || 'N/A';
-                        const distance = `${(400 * (1 - item.score)).toFixed(0)} m`;
-                        const countText = item.nearby_count !== undefined
-                            ? `${item.nearby_count} within buffer`
-                            : '';
-                        block += `
-                            <tr>
-                                <td class="ps-3 text-nowrap">${formatCategoryName(category)}:</td>
-                                <td class="text-orange-700 fw-semibold text-end">${distance}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" class="text-orange-600 small ps-4 pb-2">
-                                    ${countText}${countText && nearest ? ' | ' : ''}nearest: ${nearest}
-                                </td>
-                            </tr>
-                        `;
-                    }
-                });
-                block += `</tbody></table></div></div>`;
-                return block;
-            }
-            const transitCategories = ['metro', 'bus', 'bixi'];
-            const amenityCategories = ['park', 'grocery', 'restaurant'];
+            });
 
 
-            distanceHTML += formatDistanceBlock('Transit', transitCategories, data);
-            distanceHTML += formatDistanceBlock('Amenities', amenityCategories, data);
 
-            distanceSummary.innerHTML = distanceHTML || '<p class="text-muted">No distance data available</p>';
+            combined.innerHTML = combinedHTML;
+
 
 
             // Update recommendations section

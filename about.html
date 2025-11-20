@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About – Walkability Index</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --orange-50: #fff7ed;
+            --orange-100: #ffedd5;
+            --orange-200: #fed7aa;
+            --orange-300: #fdba74;
+            --orange-400: #fb923c;
+            --orange-500: #f97316;
+            --orange-600: #ea580c;
+            --orange-700: #c2410c;
+            --amber-500: #f59e0b;
+            --amber-600: #d97706;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--orange-50) 0%, #fef3c7 100%);
+            min-height: 100vh;
+        }
+
+        .text-orange-gradient {
+            background: linear-gradient(135deg, var(--orange-600) 0%, var(--orange-500) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-orange {
+            border: 2px solid var(--orange-200);
+            background: var(--orange-50);
+        }
+
+        .header-bar {
+            background: linear-gradient(135deg, var(--orange-500), var(--amber-500));
+            color: white;
+            border-radius: 0 0 12px 12px;
+            padding: 18px 24px;
+        }
+
+        .btn-outline-orange {
+            border-color: var(--orange-300);
+            color: white;
+            background-color: transparent;
+        }
+
+        .btn-outline-orange:hover {
+            background-color: var(--orange-100);
+            border-color: var(--orange-300);
+            color: var(--orange-700);
+        }
+
+        .about-section-title {
+            color: var(--orange-700);
+            border-bottom: 2px solid var(--orange-200);
+            padding-bottom: .4rem;
+            margin-bottom: 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header with back button -->
+    <div class="header-bar d-flex align-items-center justify-content-between">
+        <a href="/static/index.html" class="btn btn-outline-light" style="padding:10px 14px; font-size:1.7rem;">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h2 class="mb-0">About</h2>
+        <div style="width:42px;"></div>
+    </div>
+
+    <div class="container-fluid my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+
+                <div class="card card-orange shadow-lg p-4">
+
+                    <h2 class="text-orange-gradient mb-3">What is the Walkability Index?</h2>
+                    <p>
+                        The Walkability Index Platform evaluates how pedestrian-friendly a particular location is based
+                        on
+                        access to essential amenities—such as transit, parks, grocery stores, and restaurants.
+                    </p>
+                    <p>
+                        The platform analyzes walking distances, proximity to services, neighborhood accessibility, and
+                        urban environment factors. It produces an overall score and detailed breakdown to help users
+                        understand how convenient and walkable their surroundings are.
+                    </p>
+
+                    <h3 class="about-section-title mt-4">How It Works</h3>
+                    <ul>
+                        <li>The user enters a location or selects one from the autocomplete.</li>
+                        <li>The system finds nearby amenities and calculates the walking distance to each.</li>
+                        <li>Each category is weighted according to user preferences.</li>
+                        <li>A combined Walkability Score is generated along with maps and detailed breakdowns.</li>
+                    </ul>
+
+                    <h3 class="about-section-title mt-4">Features</h3>
+                    <ul>
+                        <li>Customizable distance thresholds and importance weights.</li>
+                        <li>Interactive walkability map showing buffers and POIs.</li>
+                        <li>Neighborhood gradient map illustrating walkability around the area.</li>
+                        <li>Clear category breakdown and nearest amenity information.</li>
+                        <li>Recommendations based on walkability profile.</li>
+                    </ul>
+
+                    <h3 class="about-section-title mt-4">Purpose of the Project</h3>
+                    <p>
+                        This tool is designed for residents, students, planners, and anyone interested in understanding
+                        accessibility and daily mobility in Montréal. It simplifies complex geospatial analysis into a
+                        clean, intuitive interface that helps people make informed decisions about where they live or
+                        work.
+                    </p>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
